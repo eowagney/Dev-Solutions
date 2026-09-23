@@ -1,10 +1,15 @@
 import { useState } from 'react'
 import logo from './assets/logo.png'
+import workmatch from './assets/projetos/workmatch.png'
+import colab from './assets/projetos/colab.jpeg'
+import mobile from './assets/projetos/mobile.png'
+import projeto from './assets/projetos/projeto.png'
 import './App.css'
 
 const EMPRESA = {
   nome: 'DEV Solutions',
-  whatsapp: '556292142720',
+  whatsapp: '5562992142720',
+  whatsappExibicao: '(62) 99214-2720',
   email: 'wagnergomes9a@gmail.com',
   tiktokUrl: 'https://www.tiktok.com/@eowagney',
   tiktokUser: '@eowagney',
@@ -46,6 +51,7 @@ const PILARES = [
 const PROJETOS = [
   {
     titulo: 'WorkMatch',
+    imagem: 'workmatch',
     categoria: 'Sites',
     descricao:
       'Conecta clientes com prestadores de serviços, com cadastro, publicações e chat integrado.',
@@ -54,6 +60,7 @@ const PROJETOS = [
   },
   {
     titulo: 'Extração de dados bancários',
+    imagem: 'colab',
     categoria: 'Sistemas',
     descricao:
       'Extrai dados bancários de documentos eletrônicos em formato excel.',
@@ -62,6 +69,7 @@ const PROJETOS = [
   },
   {
     titulo: 'WorkMatch App',
+    imagem: 'mobile',
     categoria: 'Aplicativos',
     descricao:
       'Conecta clientes com prestadores de serviços, com cadastro, publicações e chat integrado.',
@@ -70,6 +78,7 @@ const PROJETOS = [
   },
   {
     titulo: 'Interação com público',
+    imagem: 'projeto',
     categoria: 'Sites',
     descricao:
       'Site rápido, otimizado para interagir com convidados',
@@ -99,6 +108,7 @@ const ICONES = {
       <path d="M17.5 6.5h.01" />
     </>
   ),
+  tiktok: <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5" />,
   local: (
     <>
       <path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z" />
@@ -128,6 +138,54 @@ function Icone({ nome }) {
 /* Linha de circuito, inspirada nos traços da logo */
 function Trace() {
   return <div className="trace" aria-hidden="true" />
+}
+
+/* Imagens dos projetos: ficam em src/assets/projetos/
+   No projeto, use só o nome do arquivo, sem a extensão (ex.: imagem: 'workmatch') */
+const IMAGENS = import.meta.glob('./assets/projetos/*.{png,jpg,jpeg,webp}', {
+  eager: true,
+  import: 'default',
+})
+
+function acharImagem(nome) {
+  if (!nome) return null
+  const chave = Object.keys(IMAGENS).find((k) =>
+    k.startsWith(`./assets/projetos/${nome}.`)
+  )
+  return chave ? IMAGENS[chave] : null
+}
+
+/* Miniatura do projeto: se houver link, a imagem inteira é clicável */
+function Miniatura({ projeto, indice }) {
+  const imagem = acharImagem(projeto.imagem)
+  const Elemento = projeto.link ? 'a' : 'div'
+  const propsLink = projeto.link
+    ? {
+        href: projeto.link,
+        target: '_blank',
+        rel: 'noreferrer',
+        'aria-label': `Abrir ${projeto.titulo}`,
+      }
+    : {}
+
+  return (
+    <Elemento className={`miniatura miniatura-${indice % 3}`} {...propsLink}>
+      {imagem ? (
+        <img src={imagem} alt={`Tela do projeto ${projeto.titulo}`} />
+      ) : (
+        <div className="janela" aria-hidden="true">
+          <span className="janela-barra">
+            <i />
+            <i />
+            <i />
+          </span>
+          <span className="janela-linha janela-linha-1" />
+          <span className="janela-linha janela-linha-2" />
+          <span className="janela-linha janela-linha-3" />
+        </div>
+      )}
+    </Elemento>
+  )
 }
 
 /* ------------------------------ Página ------------------------------ */
@@ -282,22 +340,7 @@ function App() {
             <ul className="projetos">
               {projetos.map((p, i) => (
                 <li key={p.titulo} className="projeto">
-                  <div className={`miniatura miniatura-${i % 3}`}>
-                    {p.imagem ? (
-                      <img src={p.imagem} alt={p.titulo} />
-                    ) : (
-                      <div className="janela" aria-hidden="true">
-                        <span className="janela-barra">
-                          <i />
-                          <i />
-                          <i />
-                        </span>
-                        <span className="janela-linha janela-linha-1" />
-                        <span className="janela-linha janela-linha-2" />
-                        <span className="janela-linha janela-linha-3" />
-                      </div>
-                    )}
-                  </div>
+                  <Miniatura projeto={p} indice={i} />
 
                   <div className="projeto-info">
                     <span className="projeto-categoria">{p.categoria}</span>
@@ -349,7 +392,7 @@ function App() {
                       target="_blank"
                       rel="noreferrer"
                     >
-                      {EMPRESA.telefone}
+                      WhatsApp: {EMPRESA.whatsappExibicao}
                     </a>
                   </li>
                   <li>
@@ -360,6 +403,12 @@ function App() {
                     <Icone nome="instagram" />
                     <a href={EMPRESA.instagramUrl} target="_blank" rel="noreferrer">
                       {EMPRESA.instagramUser}
+                    </a>
+                  </li>
+                  <li>
+                    <Icone nome="tiktok" />
+                    <a href={EMPRESA.tiktokUrl} target="_blank" rel="noreferrer">
+                      {EMPRESA.tiktokUser}
                     </a>
                   </li>
                   <li>
